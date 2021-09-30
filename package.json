@@ -1,0 +1,24 @@
+{
+  "name": "turalsei",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "Stupid turing complete text box generator lol",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git:github.com/Mehbark/turalsei"
+  },
+  "keywords": [
+    "turing_complete",
+    "brainfuck",
+    "genrator",
+    "images",
+    "api",
+    "dumb"
+  ],
+  "author": "mehbark",
+  "license": "GPL-3.0-or-later"
+}
