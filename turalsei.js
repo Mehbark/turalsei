@@ -12,21 +12,26 @@ export function genUrl(
 }
 
 export class brain {
-  constructor(code, options) {
-    let defaultOptions = {
-      delay: 1000,
-      pointerChar: "^",
-      limit: 256,
-      dataPointerOverflow: true,
-      diffe,
-    };
-
+  constructor(code, input = false, options = {}) {
     this.code = code;
 
     if (delay < 1000) {
       delay = 1000;
     }
     this.delay = delay;
+
+    let defaultOptions = {
+      delay: 1000,
+      pointerChar: "^",
+      dataSize: 256,
+      dataPointerWrap: true,
+      customUrl:
+        "https://www.demirramon.com/gen/undertale_text_box.png?text=$$$$&box=deltarune&boxcolor=ffffff&character=deltarune-ralsei&expression=angry&charcolor=colored&font=determination&asterisk=ffffff&mode=darkworld",
+      instant: false,
+    };
+    this.parseOptions(defaultOptions, options);
+
+    this.input = input;
 
     this.dataPointer = 0;
   }
