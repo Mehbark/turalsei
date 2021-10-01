@@ -46,8 +46,8 @@ export class brain {
   memoryLine() {
     return this.data
       .map((x) => {
-        let p = parseInt(x.toString(16), 16).toString();
-        return p.length > 1 ? "" : "0" + p;
+        let hex = x.toString(16);
+        return hex.length > 1 ? hex : "0" + hex;
       })
       .join("");
   }
