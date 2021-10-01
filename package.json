@@ -22,6 +22,8 @@
   "author": "mehbark",
   "license": "GPL-3.0-or-later",
   "dependencies": {
+    "node-fetch": "^3.0.0",
     "open": "^8.2.1"
-  }
+  },
+  "esversion": 8
 }
