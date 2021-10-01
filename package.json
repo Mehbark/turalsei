@@ -20,5 +20,8 @@
     "dumb"
   ],
   "author": "mehbark",
-  "license": "GPL-3.0-or-later"
+  "license": "GPL-3.0-or-later",
+  "dependencies": {
+    "open": "^8.2.1"
+  }
 }

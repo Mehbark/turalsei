@@ -1,4 +1,6 @@
 import { genUrl, Brain } from "./turalsei.js";
+import pkg from 'open';
+const { open } = pkg;
 //console.log(genUrl("test1\ntest2") + "\n");
 
 // let testBrain = new Brain(">" + "+".repeat(65) + ".", "" /*, { outputOnly: true }*/);
@@ -8,10 +10,11 @@ let testBrain = new Brain(
   "Hello, world!"
 );
 
-let i = 0;
-while (testBrain.step()) {
-  console.log(testBrain.text());
-}
+setTimeout(() => exampleTimeOut(testBrain), 3000);
 
-console.log(testBrain.output);
-console.log(testBrain.url());
+function exampleTimeOut(brain) {
+  pkg(brain.url());
+  if (brain.step()) {
+    setTimeout(() => exampleTimeOut(brain), 3000);
+  }
+}
