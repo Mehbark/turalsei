@@ -12,20 +12,21 @@ export function genUrl(
 }
 
 export class brain {
-  constructor(code, input = false, options = {}) {
+  constructor(code = "", input = false, options = {}) {
     this.code = code;
     this.input = input;
+    this.inputPointer = 0;
 
     let defaultOptions = {
       delay: 1000,
       pointerChar: "^^",
       dataSize: 256,
-      maxNumber: 256,
+      maxNumber: 255,
       numberWrap: true,
       dataPointerWrap: true,
       maxCharsPerLine: 25,
       customUrl:
-        "https://www.demirramon.com/gen/undertale_text_box.png?text=$$$$&box=deltarune&boxcolor=ffffff&character=deltarune-ralsei&expression=angry&charcolor=colored&font=determination&asterisk=ffffff&mode=darkworld",
+        "https://www.demirramon.com/gen/undertale_text_box.png?text=$$$$&box=deltarune&character=deltarune-ralsei&expression=angry&mode=darkworld",
       instant: false,
       outputOnly: false,
     };
@@ -34,10 +35,10 @@ export class brain {
     this.delay = this.delay > 1000 ? this.delay : 1000;
 
     this.dataPointer = 0;
-    this.data = "1".repeat(this.dataSize).split("");
+    this.data = "0".repeat(this.dataSize).split("");
     this.data = this.data.map((x) => parseInt(x));
 
-    this.intructionPointer = 0;
+    this.instructionPointer = 0;
 
     this.output = "";
   }
@@ -56,6 +57,9 @@ export class brain {
   }
 
   finalText() {
+    if (this.outputOnly) {
+      return this.output;
+    }
     return [
       this.memoryLine().slice(0, this.maxCharsPerLine),
       this.pointerLine().slice(0, this.maxCharsPerLine),
@@ -63,7 +67,7 @@ export class brain {
     ].join("\n");
   }
 
-  finalUrl() {
+  url() {
     return genUrl(this.finalText(), this.customUrl);
   }
 
@@ -75,5 +79,64 @@ export class brain {
         this[opt] = defaultOptions[opt];
       }
     });
+  }
+
+  // BRAINF SECTION //
+  step() {
+    let currentCommand = this.code[this.instructionPointer];
+    let currentData = this.data[this.dataPointer];
+
+    switch (currentCommand) {
+      case ">":
+        this.dataPointer++;
+        if (this.dataPointer >= this.dataSize) {
+          if (this.dataPointerWrap) {
+            this.dataPointer = 0;
+          } else {
+            this.dataPointer--;
+          }
+        }
+        break;
+      case "<":
+        this.dataPointer--;
+        if (this.dataPointer <= 0) {
+          if (this.dataPointerWrap) {
+            this.dataPointer = this.dataSize - 1;
+          } else {
+            this.dataPointer++;
+          }
+        }
+        break;
+
+      case "+":
+        this.data[this.dataPointer]++;
+        if (this.data[this.dataPointer] > this.maxNumber) {
+          if (this.numberWrap) {
+            this.data[this.dataPointer] = 0;
+          } else {
+            this.data[this.dataPointer]--;
+          }
+        }
+        break;
+      case "-":
+        this.data[this.dataPointer]--;
+        if (this.data[this.dataPointer] < 0) {
+          if (this.numberWrap) {
+            this.data[this.dataPointer] = this.maxNumber;
+          } else {
+            this.data[this.dataPointer]++;
+          }
+        }
+        break;
+
+      case ".":
+        this.output += String.fromCharCode(currentData);
+        break;
+      case ",":
+        this.data[this.dataPointer] =
+          this.input[this.inputPointer].charCodeAt();
+    }
+    this.instructionPointer++;
+    return this.instructionPointer < this.code.length;
   }
 }
