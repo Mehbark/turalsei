@@ -11,7 +11,7 @@ export function genUrl(
   return baseUrl.replace("$$$$", encodeURI(text));
 }
 
-export class brain {
+export class Brain {
   constructor(code = "", input = false, options = {}) {
     this.code = code;
     this.input = input;
@@ -53,10 +53,10 @@ export class brain {
   }
 
   pointerLine() {
-    return " ".repeat(this.dataPointer * 2) + this.pointerChar.slice(0, 2);
+    return "--".repeat(this.dataPointer) + this.pointerChar.slice(0, 2);
   }
 
-  finalText() {
+  text() {
     if (this.outputOnly) {
       return this.output;
     }
@@ -68,7 +68,7 @@ export class brain {
   }
 
   url() {
-    return genUrl(this.finalText(), this.customUrl);
+    return genUrl(this.text(), this.customUrl);
   }
 
   parseOptions(defaultOptions, options) {
@@ -99,7 +99,7 @@ export class brain {
         break;
       case "<":
         this.dataPointer--;
-        if (this.dataPointer <= 0) {
+        if (this.dataPointer < 0) {
           if (this.dataPointerWrap) {
             this.dataPointer = this.dataSize - 1;
           } else {
@@ -133,8 +133,53 @@ export class brain {
         this.output += String.fromCharCode(currentData);
         break;
       case ",":
+        if (!this.input[this.inputPointer]) {
+          this.data[this.dataPointer] = 0;
+          break;
+        }
         this.data[this.dataPointer] =
           this.input[this.inputPointer].charCodeAt();
+        this.inputPointer++;
+        break;
+
+      case "[":
+        if (!currentData) {
+          let indentation = 1;
+          let searchIndex = this.instructionPointer;
+          while (indentation) {
+            searchIndex++;
+            if (searchIndex >= this.code.length) {
+              return false;
+            }
+            if (this.code[searchIndex] === "[") {
+              indentation++;
+            } else if (this.code[searchIndex] === "]") {
+              indentation--;
+            }
+          }
+          this.instructionPointer = searchIndex;
+        }
+        break;
+      case "]":
+        if (currentData) {
+          let indentation = 1;
+          let searchIndex = this.instructionPointer;
+          while (indentation) {
+            searchIndex--;
+            if (searchIndex < 0) {
+              return false;
+            }
+            if (this.code[searchIndex] === "]") {
+              indentation++;
+            } else if (this.code[searchIndex] === "[") {
+              indentation--;
+            }
+          }
+          this.instructionPointer = searchIndex;
+        }
+        break;
+      default:
+        break;
     }
     this.instructionPointer++;
     return this.instructionPointer < this.code.length;
