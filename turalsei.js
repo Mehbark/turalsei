@@ -6,9 +6,12 @@
  */
 export function genUrl(
   text,
-  baseUrl = "https://www.demirramon.com/gen/undertale_text_box.png?text=$$$$"
+  emotion = "default",
+  baseUrl = "https://www.demirramon.com/gen/undertale_text_box.png?text=$TX$"
 ) {
-  return baseUrl.replace("$$$$", encodeURI(text));
+  let newUrl = baseUrl.replace("$TX$", encodeURI(text));
+  newUrl = newUrl.replace("$EM$", encodeURI(emotion));
+  return newUrl;
 }
 
 export class Brain {
@@ -26,9 +29,20 @@ export class Brain {
       dataPointerWrap: true,
       maxCharsPerLine: 25,
       customUrl:
-        "https://www.demirramon.com/gen/undertale_text_box.png?text=$$$$&box=deltarune&character=deltarune-ralsei&expression=angry&mode=darkworld",
+        "https://www.demirramon.com/gen/undertale_text_box.png?text=$TX$&box=deltarune&character=deltarune-ralsei&expression=$EM$&mode=darkworld",
       instant: false,
       outputOnly: false,
+      emotions: {
+        "+": "smile",
+        "-": "sad",
+        ">": "angry",
+        "<": "angry",
+        ",": "looking-down",
+        ".": "smile-looking-down",
+        error: "disappointed",
+        done: "happy",
+      },
+      defaultEmotion: "default",
     };
     this.parseOptions(defaultOptions, options);
 
@@ -68,7 +82,7 @@ export class Brain {
   }
 
   url() {
-    return genUrl(this.text(), this.customUrl);
+    return genUrl(this.text(), this.emotion, this.customUrl);
   }
 
   parseOptions(defaultOptions, options) {
@@ -85,6 +99,7 @@ export class Brain {
   step() {
     let currentCommand = this.code[this.instructionPointer];
     let currentData = this.data[this.dataPointer];
+    let emotionSet = false;
 
     switch (currentCommand) {
       case ">":
@@ -179,9 +194,23 @@ export class Brain {
         }
         break;
       default:
+        this.expression = this.emotions.defaultEmotion;
+        emotionSet = true;
         break;
     }
+
+    if (!emotionSet) {
+      if (this.emotions[currentCommand]) {
+        this.emotion = this.emotions[currentCommand];
+      } else {
+        this.emotion = this.defaultEmotion;
+      }
+    }
+
     this.instructionPointer++;
+    if (this.instructionPointer >= this.code.length) {
+      this.emotion = this.emotions.done;
+    }
     return this.instructionPointer < this.code.length;
   }
 }
