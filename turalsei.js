@@ -194,12 +194,13 @@ export class Brain {
         }
         break;
       default:
+        if (!this.emotions) break;
         this.expression = this.emotions.defaultEmotion;
         emotionSet = true;
         break;
     }
 
-    if (!emotionSet) {
+    if (!emotionSet && this.emotions) {
       if (this.emotions[currentCommand]) {
         this.emotion = this.emotions[currentCommand];
       } else {
